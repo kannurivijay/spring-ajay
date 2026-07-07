@@ -9,5 +9,5 @@ COPY ${JAR_FILE} app.jar
 # Expose the application port
 EXPOSE 8080
 
-# Run the App
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+# Run the App with unbuffered output
+ENTRYPOINT ["java", "-Dspring.output.ansi.enabled=always", "-jar", "/app.jar"]

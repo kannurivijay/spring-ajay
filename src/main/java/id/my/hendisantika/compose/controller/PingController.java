@@ -1,6 +1,7 @@
 package id.my.hendisantika.compose.controller;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,14 +17,14 @@ import org.springframework.web.bind.annotation.RestController;
  * Time: 07.11
  * To change this template use File | Settings | File Templates.
  */
-@Slf4j
 @RestController
 @RequestMapping("/api/ping")
 public class PingController {
+    private static final Logger logger = LoggerFactory.getLogger(PingController.class);
 
     @GetMapping
     public String ping() {
-        log.debug("Ping action called");
-        return "Pong >>> It works!";
+        logger.info("Ping endpoint was calleddddd");
+        return "Pong >>> It workingggg!";
     }
 }

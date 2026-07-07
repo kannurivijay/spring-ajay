@@ -2,8 +2,6 @@ package id.my.hendisantika.compose.controller;
 
 import id.my.hendisantika.compose.entity.User;
 import id.my.hendisantika.compose.service.UserService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,40 +17,37 @@ import java.util.List;
  * Time: 07.12
  * To change this template use File | Settings | File Templates.
  */
-@Slf4j
 @RestController
 @RequestMapping("/api/users")
-@RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
 
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
     @PostMapping
     public User create(@RequestBody User user) {
-        log.debug("User create controller called");
         return userService.create(user);
     }
 
     @GetMapping
     public List<User> findAll() {
-        log.debug("User findAll controller called");
         return userService.findAll();
     }
 
     @GetMapping("/{id}")
     public User findById(@PathVariable Long id) {
-        log.debug("User findOne controller called with id: {}", id);
         return userService.findById(id);
     }
 
     @PutMapping("/{id}")
     public User update(@PathVariable Long id, @RequestBody User user) {
-        log.debug("User update controller called with id: {}", id);
         return userService.update(id, user);
     }
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
-        log.debug("User delete controller called with id: {}", id);
         userService.delete(id);
     }
 

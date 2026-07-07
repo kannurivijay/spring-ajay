@@ -19,8 +19,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "users")
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class User {
 
     @Id
@@ -35,6 +35,10 @@ public class User {
 
     @Column(name = "email")
     private String email;
+
+    @Version
+    @Column(name = "version")
+    private Long version;
 
     public User(String firstName, String lastName, String email) {
         this.firstName = firstName;
