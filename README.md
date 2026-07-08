@@ -39,3 +39,14 @@ Ensure Docker, Java 21, and Maven (or the bundled `./mvnw`) are available. Build
 ./up.sh
 ./mvnw test
 ```
+
+### Design patterns used
+- **Repository Pattern**: `MySqlPlaybackRepository` and `PlaybackProgressJpaRepository` abstract data access and provide a single interface for cache/event/store operations.
+- **Cache-Aside (Lazy Loading)**: Redis is used as a hot cache; reads try cache first, falling back to DB and populating cache on miss.
+- **Producer-Consumer / Event-Driven**: Ingest publishes events to Kafka; `DBWorker` consumes, batches, and persists asynchronously.
+- **CQRS (Read/Write Path Separation)**: Hot-path writes go to cache and event stream; reads are served from cache (fast path) or DB (fallback).
+- **Idempotency & Token Bucket-like Rate Limiting**: Idempotency keys stored in Redis; rate limiting uses Redis time-bucket counters.
+- **Batching & Merge Strategy**: Worker batches events and deduplicates per `userId+mediaId+device`, merging based on `updatedAt`.
+- **Optimistic Locking**: JPA `@Version` used to avoid lost updates during concurrent persistence.
+
+HLD: For architecture-level design and rationale see the high-level design in `docs/LLD-playback-progress.md` (this repo contains the detailed LLD and TASKS files).
