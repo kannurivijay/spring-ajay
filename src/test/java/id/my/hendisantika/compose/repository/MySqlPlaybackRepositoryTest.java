@@ -27,10 +27,10 @@ class MySqlPlaybackRepositoryTest {
     PlaybackProgressJpaRepository jpaRepository;
 
     @Mock
-    CacheClient cacheClient;
+    id.my.hendisantika.compose.repository.cache.CacheClient cacheClient;
 
     @Mock
-    EventPublisher eventPublisher;
+    id.my.hendisantika.compose.repository.event.EventPublisher eventPublisher;
 
     @InjectMocks
     MySqlPlaybackRepository repository;
@@ -39,13 +39,13 @@ class MySqlPlaybackRepositoryTest {
 
     @BeforeEach
     void setup() {
-        sample = new PlaybackProgress(123L, "media-1", 1000L, 5000L, Instant.now(), Instant.now());
+        sample = new PlaybackProgress(123L, "media-1", "TV", 1000L, 5000L, Instant.now(), Instant.now());
     }
 
     @Test
     void getFromStore_returnsEntityWhenPresent() {
-        when(jpaRepository.findByUserIdAndMediaId(123L, "media-1")).thenReturn(Optional.of(sample));
-        var opt = repository.getFromStore(123L, "media-1");
+        when(jpaRepository.findByUserIdAndMediaIdAndDevice(123L, "media-1", "TV")).thenReturn(Optional.of(sample));
+        var opt = repository.getFromStore(123L, "media-1", "TV");
         assertTrue(opt.isPresent());
         assertEquals("media-1", opt.get().getMediaId());
     }
@@ -60,8 +60,8 @@ class MySqlPlaybackRepositoryTest {
 
     @Test
     void cacheAndPublish_behaviour() {
-        when(cacheClient.get(123L, "media-1")).thenReturn(Optional.of(sample));
-        var cached = repository.getFromCache(123L, "media-1");
+        when(cacheClient.get(123L, "media-1", "TV")).thenReturn(Optional.of(sample));
+        var cached = repository.getFromCache(123L, "media-1", "TV");
         assertTrue(cached.isPresent());
 
         repository.writeToCache(sample);

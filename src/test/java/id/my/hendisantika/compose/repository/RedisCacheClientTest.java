@@ -43,18 +43,18 @@ class RedisCacheClientTest {
         cacheClient = new RedisCacheClient(redisTemplate, objectMapper);
         when(redisTemplate.opsForHash()).thenReturn(hashOps);
         when(redisTemplate.opsForValue()).thenReturn(valueOps);
-        sample = new PlaybackProgress(1L, "m1", 1000L, 5000L, Instant.now(), Instant.now());
+        sample = new PlaybackProgress(1L, "m1", "MOBILE", 1000L, 5000L, Instant.now(), Instant.now());
     }
 
     @Test
     void put_and_get_roundtrip() throws JsonProcessingException {
         String key = "playback:user:1";
         String json = objectMapper.writeValueAsString(sample);
-        doNothing().when(hashOps).put(key, "m1", json);
-        when(hashOps.get(key, "m1")).thenReturn(json);
+        doNothing().when(hashOps).put(key, "m1:MOBILE", json);
+        when(hashOps.get(key, "m1:MOBILE")).thenReturn(json);
 
         cacheClient.put(sample);
-        var opt = cacheClient.get(1L, "m1");
+        var opt = cacheClient.get(1L, "m1", "MOBILE");
         assertTrue(opt.isPresent());
         assertEquals("m1", opt.get().getMediaId());
     }
@@ -63,10 +63,10 @@ class RedisCacheClientTest {
     void getAll_returnsMap() throws JsonProcessingException {
         String key = "playback:user:1";
         String json = objectMapper.writeValueAsString(sample);
-        when(hashOps.entries(key)).thenReturn(Map.of("m1", json));
+        when(hashOps.entries(key)).thenReturn(Map.of("m1:MOBILE", json));
         var all = cacheClient.getAll(1L);
         assertEquals(1, all.size());
-        assertTrue(all.containsKey("m1"));
+        assertTrue(all.containsKey("m1:MOBILE"));
     }
 
     @Test

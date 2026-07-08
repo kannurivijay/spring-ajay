@@ -102,10 +102,10 @@ public class DBWorker {
         AtomicInteger attempt = new AtomicInteger(0);
         while (attempt.incrementAndGet() <= maxAttempts) {
             try {
-                Optional<PlaybackProgress> existingOpt = jpaRepository.findByUserIdAndMediaId(incoming.getUserId(), incoming.getMediaId());
+                Optional<PlaybackProgress> existingOpt = jpaRepository.findByUserIdAndMediaIdAndDevice(incoming.getUserId(), incoming.getMediaId(), incoming.getDevice());
                 if (existingOpt.isEmpty()) {
                     // new record
-                    PlaybackProgress toSave = new PlaybackProgress(incoming.getUserId(), incoming.getMediaId(), incoming.getPositionMs(), incoming.getDurationMs(), Instant.now(), incoming.getUpdatedAt());
+                    PlaybackProgress toSave = new PlaybackProgress(incoming.getUserId(), incoming.getMediaId(), incoming.getDevice(), incoming.getPositionMs(), incoming.getDurationMs(), Instant.now(), incoming.getUpdatedAt());
                     jpaRepository.save(toSave);
                 } else {
                     PlaybackProgress existing = existingOpt.get();

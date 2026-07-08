@@ -10,11 +10,11 @@ import java.util.Optional;
  * Interface that abstracts cache, event publish and persistent store operations for playback records.
  */
 public interface PlaybackRepository {
-    Optional<PlaybackProgress> getFromCache(Long userId, String mediaId);
+    Optional<PlaybackProgress> getFromCache(Long userId, String mediaId, String device);
     void writeToCache(PlaybackProgress record);
     void publishEvent(PlaybackProgress record);
 
-    Optional<PlaybackProgress> getFromStore(Long userId, String mediaId);
+    Optional<PlaybackProgress> getFromStore(Long userId, String mediaId, String device);
     PlaybackProgress writeToStore(PlaybackProgress record);
     Page<PlaybackProgress> getByUser(Long userId, Pageable pageable);
 }

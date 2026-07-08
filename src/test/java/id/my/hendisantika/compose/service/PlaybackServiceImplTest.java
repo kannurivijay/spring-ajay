@@ -20,24 +20,26 @@ import static org.mockito.Mockito.*;
 
 public class PlaybackServiceImplTest {
 
-    private PlaybackStoreRepository storeRepository;
+    private id.my.hendisantika.compose.repository.PlaybackRepository playbackRepository;
+    private id.my.hendisantika.compose.repository.cache.CacheClient cacheClient;
     private PlaybackServiceImpl service;
 
     @BeforeEach
     void setup() {
-        storeRepository = Mockito.mock(PlaybackStoreRepository.class);
-        service = new PlaybackServiceImpl(storeRepository);
+        playbackRepository = Mockito.mock(id.my.hendisantika.compose.repository.PlaybackRepository.class);
+        cacheClient = Mockito.mock(id.my.hendisantika.compose.repository.cache.CacheClient.class);
+        service = new PlaybackServiceImpl(playbackRepository, cacheClient);
     }
 
     @Test
     void saveProgress_happyPath_createsNewRecord() {
-        PlaybackSaveRequest req = new PlaybackSaveRequest(1L, "m1", 1000L, 3000L, Instant.now());
-        when(storeRepository.getFromStore(1L, "m1")).thenReturn(Optional.empty());
+        PlaybackSaveRequest req = new PlaybackSaveRequest(1L, "m1", 1000L, 3000L, Instant.now(), "MOBILE");
 
         service.saveProgress(req);
 
         ArgumentCaptor<PlaybackProgress> cap = ArgumentCaptor.forClass(PlaybackProgress.class);
-        verify(storeRepository, times(1)).writeToStore(cap.capture());
+        verify(playbackRepository, times(1)).writeToCache(cap.capture());
+        verify(playbackRepository, times(1)).publishEvent(any(PlaybackProgress.class));
         PlaybackProgress saved = cap.getValue();
         assertEquals(1L, saved.getUserId());
         assertEquals("m1", saved.getMediaId());
@@ -51,7 +53,7 @@ public class PlaybackServiceImplTest {
 
     @Test
     void getHistory_returnsPagedResults() {
-        PlaybackProgress p1 = new PlaybackProgress(1L, "m1", 1000L, 2000L, Instant.now(), Instant.now());
+        PlaybackProgress p1 = new PlaybackProgress(1L, "m1", "MOBILE", 1000L, 2000L, Instant.now(), Instant.now());
         // set id via reflection is cumbersome; repository doesn't rely on id for mapping in test
         when(storeRepository.getByUser(eq(1L), any(PageRequest.class))).thenReturn(new PageImpl<>(List.of(p1), PageRequest.of(0,10),1));
 

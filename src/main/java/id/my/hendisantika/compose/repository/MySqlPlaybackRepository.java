@@ -21,9 +21,9 @@ public class MySqlPlaybackRepository implements PlaybackRepository {
     private final id.my.hendisantika.compose.repository.event.EventPublisher eventPublisher;
 
     @Override
-    public Optional<PlaybackProgress> getFromCache(Long userId, String mediaId) {
+    public Optional<PlaybackProgress> getFromCache(Long userId, String mediaId, String device) {
         if (userId == null || mediaId == null) return Optional.empty();
-        return cacheClient.get(userId, mediaId);
+        return cacheClient.get(userId, mediaId, device);
     }
 
     @Override
@@ -39,9 +39,9 @@ public class MySqlPlaybackRepository implements PlaybackRepository {
     }
 
     @Override
-    public Optional<PlaybackProgress> getFromStore(Long userId, String mediaId) {
+    public Optional<PlaybackProgress> getFromStore(Long userId, String mediaId, String device) {
         if (userId == null || mediaId == null) return Optional.empty();
-        return jpaRepository.findByUserIdAndMediaId(userId, mediaId);
+        return jpaRepository.findByUserIdAndMediaIdAndDevice(userId, mediaId, device);
     }
 
     @Override

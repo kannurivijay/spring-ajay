@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS playback_progress (
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   version BIGINT DEFAULT 0,
-  UNIQUE KEY uq_user_media (user_id, media_id),
+  UNIQUE KEY uq_user_media_device (user_id, media_id, device),
   INDEX idx_user_updated (user_id, updated_at)
 );
 

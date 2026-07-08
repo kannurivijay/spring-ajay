@@ -15,8 +15,8 @@ public class JpaPlaybackStoreRepository implements PlaybackStoreRepository {
     private final PlaybackProgressJpaRepository jpaRepository;
 
     @Override
-    public Optional<PlaybackProgress> getFromStore(Long userId, String mediaId) {
-        return jpaRepository.findByUserIdAndMediaId(userId, mediaId);
+    public Optional<PlaybackProgress> getFromStore(Long userId, String mediaId, String device) {
+        return jpaRepository.findByUserIdAndMediaIdAndDevice(userId, mediaId, device);
     }
 
     @Override

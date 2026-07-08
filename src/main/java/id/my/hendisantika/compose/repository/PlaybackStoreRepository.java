@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.Optional;
 
 public interface PlaybackStoreRepository {
-    Optional<PlaybackProgress> getFromStore(Long userId, String mediaId);
+    Optional<PlaybackProgress> getFromStore(Long userId, String mediaId, String device);
     PlaybackProgress writeToStore(PlaybackProgress record);
     Page<PlaybackProgress> getByUser(Long userId, Pageable pageable);
 }

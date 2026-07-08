@@ -6,7 +6,7 @@ import java.util.Optional;
 import java.util.Map;
 
 public interface CacheClient {
-    Optional<PlaybackProgress> get(Long userId, String mediaId);
+    Optional<PlaybackProgress> get(Long userId, String mediaId, String device);
     void put(PlaybackProgress record);
     Map<String, PlaybackProgress> getAll(Long userId);
 

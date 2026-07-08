@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import java.time.Instant;
 
 @Entity
-@Table(name = "playback_progress", indexes = {@Index(name = "idx_user_media", columnList = "user_id,media_id")})
+@Table(name = "playback_progress", indexes = {@Index(name = "idx_user_media_device", columnList = "user_id,media_id,device")})
 public class PlaybackProgress {
 
     @Id
@@ -16,6 +16,9 @@ public class PlaybackProgress {
 
     @Column(name = "media_id", nullable = false, length = 200)
     private String mediaId;
+
+    @Column(name = "device", length = 50)
+    private String device;
 
     @Column(name = "position_ms")
     private Long positionMs;
@@ -35,9 +38,10 @@ public class PlaybackProgress {
 
     public PlaybackProgress() {}
 
-    public PlaybackProgress(Long userId, String mediaId, Long positionMs, Long durationMs, Instant createdAt, Instant updatedAt) {
+    public PlaybackProgress(Long userId, String mediaId, String device, Long positionMs, Long durationMs, Instant createdAt, Instant updatedAt) {
         this.userId = userId;
         this.mediaId = mediaId;
+        this.device = device;
         this.positionMs = positionMs;
         this.durationMs = durationMs;
         this.createdAt = createdAt;
@@ -47,6 +51,7 @@ public class PlaybackProgress {
     public Long getId() { return id; }
     public Long getUserId() { return userId; }
     public String getMediaId() { return mediaId; }
+    public String getDevice() { return device; }
     public Long getPositionMs() { return positionMs; }
     public Long getDurationMs() { return durationMs; }
     public Instant getCreatedAt() { return createdAt; }

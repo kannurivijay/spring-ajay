@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface PlaybackProgressJpaRepository extends JpaRepository<PlaybackProgress, Long> {
-    Optional<PlaybackProgress> findByUserIdAndMediaId(Long userId, String mediaId);
+    Optional<PlaybackProgress> findByUserIdAndMediaIdAndDevice(Long userId, String mediaId, String device);
     Page<PlaybackProgress> findByUserIdOrderByUpdatedAtDesc(Long userId, Pageable pageable);
 }

@@ -23,11 +23,16 @@ public class RedisCacheClient implements CacheClient {
 
     private String keyFor(Long userId) { return "playback:user:" + userId; }
 
+    private String fieldFor(String mediaId, String device) {
+        if (device == null || device.isBlank()) return mediaId;
+        return mediaId + ":" + device;
+    }
+
     @Override
-    public Optional<PlaybackProgress> get(Long userId, String mediaId) {
+    public Optional<PlaybackProgress> get(Long userId, String mediaId, String device) {
         try {
             HashOperations<String, String, String> ops = redisTemplate.opsForHash();
-            String json = ops.get(keyFor(userId), mediaId);
+            String json = ops.get(keyFor(userId), fieldFor(mediaId, device));
             if (json == null) return Optional.empty();
             PlaybackProgress p = objectMapper.readValue(json, PlaybackProgress.class);
             return Optional.of(p);
@@ -41,7 +46,7 @@ public class RedisCacheClient implements CacheClient {
         try {
             HashOperations<String, String, String> ops = redisTemplate.opsForHash();
             String json = objectMapper.writeValueAsString(record);
-            ops.put(keyFor(record.getUserId()), record.getMediaId(), json);
+            ops.put(keyFor(record.getUserId()), fieldFor(record.getMediaId(), record.getDevice()), json);
         } catch (JsonProcessingException e) {
             // swallow serialization errors for cache write
         }

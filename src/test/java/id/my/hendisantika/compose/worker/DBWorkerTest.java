@@ -46,14 +46,14 @@ class DBWorkerTest {
         properties.setWorkerMaxRetries(2);
         // inject via reflection by recreating worker
         this.worker = new DBWorker(new ObjectMapper(), jpaRepository, producerClient, properties);
-        incoming = new PlaybackProgress(1L, "m1", 1000L, 5000L, Instant.now(), Instant.now());
+        incoming = new PlaybackProgress(1L, "m1", "MOBILE", 1000L, 5000L, Instant.now(), Instant.now());
     }
 
     @Test
     void persist_newRecord_saved() throws Exception {
         String payload = new ObjectMapper().writeValueAsString(incoming);
         // simulate no existing
-        when(jpaRepository.findByUserIdAndMediaId(1L, "m1")).thenReturn(Optional.empty());
+        when(jpaRepository.findByUserIdAndMediaIdAndDevice(1L, "m1", "MOBILE")).thenReturn(Optional.empty());
 
         worker.acceptPayload(payload);
         worker.flushBuffer();
@@ -64,10 +64,10 @@ class DBWorkerTest {
     @Test
     void persist_olderIncoming_skipped() throws Exception {
         Instant now = Instant.now();
-        PlaybackProgress existing = new PlaybackProgress(1L, "m1", 2000L, 5000L, now.minusSeconds(10), now.plusSeconds(100));
-        PlaybackProgress olderIncoming = new PlaybackProgress(1L, "m1", 1000L, 5000L, now.minusSeconds(20), now);
+        PlaybackProgress existing = new PlaybackProgress(1L, "m1", "MOBILE", 2000L, 5000L, now.minusSeconds(10), now.plusSeconds(100));
+        PlaybackProgress olderIncoming = new PlaybackProgress(1L, "m1", "MOBILE", 1000L, 5000L, now.minusSeconds(20), now);
         String payload = new ObjectMapper().writeValueAsString(olderIncoming);
-        when(jpaRepository.findByUserIdAndMediaId(1L, "m1")).thenReturn(Optional.of(existing));
+        when(jpaRepository.findByUserIdAndMediaIdAndDevice(1L, "m1", "MOBILE")).thenReturn(Optional.of(existing));
 
         worker.acceptPayload(payload);
         worker.flushBuffer();
@@ -78,7 +78,7 @@ class DBWorkerTest {
     @Test
     void persist_failure_publishesToDlq() throws Exception {
         String payload = new ObjectMapper().writeValueAsString(incoming);
-        when(jpaRepository.findByUserIdAndMediaId(1L, "m1")).thenThrow(new RuntimeException("dbdown"));
+        when(jpaRepository.findByUserIdAndMediaIdAndDevice(1L, "m1", "MOBILE")).thenThrow(new RuntimeException("dbdown"));
 
         worker.acceptPayload(payload);
         worker.flushBuffer();

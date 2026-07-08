@@ -20,16 +20,19 @@ public class PlaybackSaveRequest {
     @Min(0)
     private Long durationMs;
 
+    private String device;
+
     private Instant updatedAt;
 
     public PlaybackSaveRequest() {}
 
-    public PlaybackSaveRequest(Long userId, String mediaId, Long positionMs, Long durationMs, Instant updatedAt) {
+    public PlaybackSaveRequest(Long userId, String mediaId, Long positionMs, Long durationMs, Instant updatedAt, String device) {
         this.userId = userId;
         this.mediaId = mediaId;
         this.positionMs = positionMs;
         this.durationMs = durationMs;
         this.updatedAt = updatedAt;
+        this.device = device;
     }
 
     public Long getUserId() { return userId; }
@@ -37,4 +40,5 @@ public class PlaybackSaveRequest {
     public Long getPositionMs() { return positionMs; }
     public Long getDurationMs() { return durationMs; }
     public Instant getUpdatedAt() { return updatedAt; }
+    public String getDevice() { return device; }
 }

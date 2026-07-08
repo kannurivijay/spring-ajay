@@ -40,7 +40,7 @@ class PlaybackControllerTest {
 
     @Test
     void save_happyPath_returns202AndTraceId() throws Exception {
-        PlaybackSaveRequest req = new PlaybackSaveRequest(1L, "m1", 1000L, 5000L, Instant.now());
+        PlaybackSaveRequest req = new PlaybackSaveRequest(1L, "m1", 1000L, 5000L, Instant.now(), "MOBILE");
         doNothing().when(playbackService).saveProgress(req);
 
         mvc.perform(post("/v1/playback/save")
@@ -55,7 +55,7 @@ class PlaybackControllerTest {
 
     @Test
     void save_missingScope_returns403() throws Exception {
-        PlaybackSaveRequest req = new PlaybackSaveRequest(1L, "m1", 1000L, 5000L, Instant.now());
+        PlaybackSaveRequest req = new PlaybackSaveRequest(1L, "m1", 1000L, 5000L, Instant.now(), "MOBILE");
 
         mvc.perform(post("/v1/playback/save")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -67,7 +67,7 @@ class PlaybackControllerTest {
     @Test
     void save_invalidRequest_returns400() throws Exception {
         // missing mediaId
-        PlaybackSaveRequest req = new PlaybackSaveRequest(1L, "", 1000L, 5000L, Instant.now());
+        PlaybackSaveRequest req = new PlaybackSaveRequest(1L, "", 1000L, 5000L, Instant.now(), "MOBILE");
 
         mvc.perform(post("/v1/playback/save")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -79,7 +79,7 @@ class PlaybackControllerTest {
     @Test
     void history_cacheHit_returnsRecords() throws Exception {
         // prepare a simple cache-backed service response by mocking playbackService
-        var dto = new id.my.hendisantika.compose.dto.PlaybackRecordDTO(1L, 1L, "m1", 1000L, 5000L, Instant.now(), Instant.now());
+        var dto = new id.my.hendisantika.compose.dto.PlaybackRecordDTO(1L, 1L, "m1", "MOBILE", 1000L, 5000L, Instant.now(), Instant.now());
         var resp = new id.my.hendisantika.compose.dto.PlaybackHistoryResponse(java.util.List.of(dto), 1);
         when(playbackService.getHistory(eq(1L), any(Integer.class), anyString())).thenReturn(resp);
 

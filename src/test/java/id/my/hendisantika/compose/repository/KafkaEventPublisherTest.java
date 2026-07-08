@@ -29,7 +29,7 @@ class KafkaEventPublisherTest {
 
     @BeforeEach
     void setup() {
-        sample = new PlaybackProgress(1L, "m1", 1000L, 5000L, Instant.now(), Instant.now());
+        sample = new PlaybackProgress(1L, "m1", "MOBILE", 1000L, 5000L, Instant.now(), Instant.now());
     }
 
     @Test

@@ -31,7 +31,7 @@ public class PlaybackServiceImpl implements PlaybackService {
         if (request == null) throw new IllegalArgumentException("request is required");
         Instant now = Optional.ofNullable(request.getUpdatedAt()).orElse(Instant.now());
         // Hot-path behaviour: write to cache and publish event to Kafka for async persistence.
-        PlaybackProgress record = new PlaybackProgress(request.getUserId(), request.getMediaId(), request.getPositionMs(), request.getDurationMs(), now, now);
+        PlaybackProgress record = new PlaybackProgress(request.getUserId(), request.getMediaId(), request.getDevice(), request.getPositionMs(), request.getDurationMs(), now, now);
         // Write to cache (Redis HSET playback:user:{userId} field mediaId -> JSON)
         playbackRepository.writeToCache(record);
         // Publish event for worker to persist to DB asynchronously
@@ -42,7 +42,7 @@ public class PlaybackServiceImpl implements PlaybackService {
     public PlaybackHistoryResponse getHistory(Long userId, Pageable pageable) {
         Pageable p = pageable == null ? PageRequest.of(0, 50) : pageable;
         var page = playbackRepository.getByUser(userId, p);
-        List<PlaybackRecordDTO> records = page.stream().map(ent -> new PlaybackRecordDTO(ent.getId(), ent.getUserId(), ent.getMediaId(), ent.getPositionMs(), ent.getDurationMs(), ent.getCreatedAt(), ent.getUpdatedAt())).collect(Collectors.toList());
+        List<PlaybackRecordDTO> records = page.stream().map(ent -> new PlaybackRecordDTO(ent.getId(), ent.getUserId(), ent.getMediaId(), ent.getDevice(), ent.getPositionMs(), ent.getDurationMs(), ent.getCreatedAt(), ent.getUpdatedAt())).collect(Collectors.toList());
         return new PlaybackHistoryResponse(records, page.getTotalElements());
     }
 
@@ -66,7 +66,7 @@ public class PlaybackServiceImpl implements PlaybackService {
             int from = Math.min(offset, total);
             int to = Math.min(from + pageSize, total);
             var slice = list.subList(from, to);
-            List<PlaybackRecordDTO> records = slice.stream().map(ent -> new PlaybackRecordDTO(ent.getId(), ent.getUserId(), ent.getMediaId(), ent.getPositionMs(), ent.getDurationMs(), ent.getCreatedAt(), ent.getUpdatedAt())).collect(Collectors.toList());
+            List<PlaybackRecordDTO> records = slice.stream().map(ent -> new PlaybackRecordDTO(ent.getId(), ent.getUserId(), ent.getMediaId(), ent.getDevice(), ent.getPositionMs(), ent.getDurationMs(), ent.getCreatedAt(), ent.getUpdatedAt())).collect(Collectors.toList());
             String next = to < total ? java.util.Base64.getUrlEncoder().encodeToString(String.valueOf(to).getBytes()) : null;
             return new PlaybackHistoryResponse(records, total);
         }
@@ -74,7 +74,7 @@ public class PlaybackServiceImpl implements PlaybackService {
         // Fallback to store (DB)
         int pageIndex = offset / pageSize;
         var page = playbackRepository.getByUser(userId, PageRequest.of(pageIndex, pageSize));
-        List<PlaybackRecordDTO> records = page.stream().map(ent -> new PlaybackRecordDTO(ent.getId(), ent.getUserId(), ent.getMediaId(), ent.getPositionMs(), ent.getDurationMs(), ent.getCreatedAt(), ent.getUpdatedAt())).collect(Collectors.toList());
+        List<PlaybackRecordDTO> records = page.stream().map(ent -> new PlaybackRecordDTO(ent.getId(), ent.getUserId(), ent.getMediaId(), ent.getDevice(), ent.getPositionMs(), ent.getDurationMs(), ent.getCreatedAt(), ent.getUpdatedAt())).collect(Collectors.toList());
         // populate cache for future hits
         for (var ent : page) {
             playbackRepository.writeToCache(ent);
